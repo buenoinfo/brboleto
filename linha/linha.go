@@ -12,12 +12,13 @@ var (
 
 // LinhaDigitavel representa uma linha digitável bancária de 47 dígitos.
 type LinhaDigitavel struct {
-	Valor      string
-	Banco      string
-	Moeda      string
-	DV         string
-	Vencimento string
-	ValorReal  string
+	Valor           string
+	Banco           string
+	Moeda           string
+	DV              string
+	Vencimento      string
+	FatorVencimento string
+	ValorReal       string
 }
 
 // ValidarDV valida os três dígitos dos campos e o dígito geral do boleto.

@@ -37,6 +37,11 @@ tasks:
     cmds:
       - go build ./...
 
+  boleto:
+    desc: Extrai linhas de um PDF de boleto
+    cmds:
+      - go run ./cmd/brboleto {{.CLI_ARGS}}
+
   tidy:
     desc: Organiza as dependências do módulo
     cmds:

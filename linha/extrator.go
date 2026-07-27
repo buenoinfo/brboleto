@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-var reLinhaDigitavel = regexp.MustCompile(`(?:\d[. -]?){47,48}`)
+var reLinhaDigitavel = regexp.MustCompile(`\b\d(?:[ \t.-]*\d){46,47}\b`)
 
 func extrairDeTexto(texto string) ([]LinhaDigitavel, error) {
 	var linhas []LinhaDigitavel
@@ -32,8 +32,9 @@ func interpretar(valor string) (LinhaDigitavel, error) {
 	}
 	linha := LinhaDigitavel{
 		Valor: valor, Banco: valor[0:3], Moeda: valor[3:4],
-		DV: valor[32:33], Vencimento: valor[33:37],
-		ValorReal: formatarValor(valor[37:47]),
+		DV: valor[32:33], Vencimento: formatarVencimento(valor[33:37]),
+		FatorVencimento: valor[33:37],
+		ValorReal:       formatarValor(valor[37:47]),
 	}
 	if !linha.ValidarDV() {
 		return LinhaDigitavel{}, fmt.Errorf("%w: %s", ErrDVInvalido, valor)

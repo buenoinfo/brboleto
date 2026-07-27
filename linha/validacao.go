@@ -1,6 +1,23 @@
 package linha
 
-import "strconv"
+import (
+	"strconv"
+	"time"
+)
+
+func formatarVencimento(fator string) string {
+	valor, err := strconv.Atoi(fator)
+	if err != nil || valor == 0 {
+		return ""
+	}
+	base := time.Date(1997, 10, 7, 0, 0, 0, 0, time.UTC)
+	if valor >= 1000 {
+		base = time.Date(2025, 2, 22, 0, 0, 0, 0, time.UTC)
+		valor -= 1000
+	}
+	data := base.AddDate(0, 0, valor)
+	return data.Format("02/01/06")
+}
 
 func modulo10(valor string) string {
 	soma, peso := 0, 2

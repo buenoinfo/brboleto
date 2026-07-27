@@ -2,29 +2,29 @@
 
 Biblioteca Go para extrair linhas digitáveis de boletos bancários brasileiros.
 
-O pacote público suporta boletos bancários no formato de 47 dígitos. A entrada deve ser um arquivo PDF ou o conteúdo de um PDF codificado em Base64. Boletos de arrecadação de 48 dígitos não fazem parte do escopo atual.
+O pacote público suporta boletos bancários no formato de 47 dígitos. A entrada deve ser um arquivo PDF ou o conteúdo de um PDF codificado em Base64. A leitura do PDF é feita diretamente em Go, sem `pdftotext` ou outras dependências externas. Boletos de arrecadação de 48 dígitos não fazem parte do escopo atual.
 
 ## Requisitos
 
 - Go 1.22 ou superior;
-- `pdftotext` disponível no `PATH`.
-
-Instalação do `pdftotext`:
-
-```bash
-# macOS
-brew install poppler
-
-# Debian/Ubuntu
-sudo apt-get install poppler-utils
-```
-
-No Windows, instale o Poppler para Windows e adicione o diretório que contém `pdftotext.exe` ao `PATH`.
+- sistema operacional Windows, macOS ou Linux;
+- um PDF com texto selecionável.
 
 ## Instalação
 
 ```bash
 go get github.com/buenoinfo/brboleto
+```
+
+## Uso com arquivo RTF
+
+Quando o RTF original estiver disponível, prefira esse formato. A biblioteca extrai o texto diretamente, sem OCR e sem dependências instaladas no sistema:
+
+```go
+linhas, err := linha.ExtrairDeRTF("./boleto.rtf")
+if err != nil {
+    log.Fatal(err)
+}
 ```
 
 ## Uso com arquivo PDF
@@ -67,15 +67,18 @@ type LinhaDigitavel struct {
     Moeda       string
     DV          string
     Vencimento  string
+    FatorVencimento string
     ValorReal   string
 }
 ```
 
-Também estão disponíveis `item.ValidarDV()` e `item.CodigoBarras44()`. `Valor` contém os 47 dígitos sem espaços ou pontuação. `ValorReal` usa ponto como separador decimal, por exemplo `100.00`.
+Também estão disponíveis `item.ValidarDV()` e `item.CodigoBarras44()`. `Valor` contém os 47 dígitos sem espaços ou pontuação. `Vencimento` usa o formato `dd/mm/aa`; `FatorVencimento` preserva o fator original. `ValorReal` usa ponto como separador decimal, por exemplo `100.00`.
 
 ## Erros
 
-As funções podem retornar erros quando o PDF não existe, `pdftotext` não está instalado, o Base64 é inválido, nenhuma linha válida é encontrada ou os dígitos verificadores são inválidos.
+As funções podem retornar erros quando o PDF não existe ou é inválido, o Base64 é inválido, nenhuma linha válida é encontrada ou os dígitos verificadores são inválidos.
+
+PDFs escaneados, que contêm apenas imagens, não possuem texto para extração e exigem OCR. OCR não faz parte desta versão. Se o RTF original estiver disponível, use `ExtrairDeRTF`.
 
 ## Desenvolvimento
 
@@ -95,3 +98,19 @@ go test ./...
 go vet ./...
 go build ./...
 ```
+
+## Teste com um PDF
+
+Para testar manualmente um boleto, informe o caminho do PDF:
+
+```bash
+task boleto -- ./caminho/para/boleto.rtf
+```
+
+Ou execute diretamente:
+
+```bash
+go run ./cmd/brboleto ./caminho/para/boleto.rtf
+```
+
+O comando identifica automaticamente arquivos `.rtf` e `.pdf` e imprime a linha digitável, banco, moeda, dígitos verificadores, vencimento, valor e código de barras encontrados.

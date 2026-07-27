@@ -1,6 +1,10 @@
 package linha
 
-import "testing"
+import (
+	"os"
+	"path/filepath"
+	"testing"
+)
 
 func TestExtrairDeTexto(t *testing.T) {
 	valor := "00190500954014481606906809350314337370000000100"
@@ -24,8 +28,30 @@ func TestCodigoBarras44(t *testing.T) {
 	}
 }
 
+func TestFormatarVencimentoFatorAtual(t *testing.T) {
+	if got := formatarVencimento("1545"); got != "21/08/26" {
+		t.Fatalf("vencimento = %s, esperado 21/08/26", got)
+	}
+}
+
 func TestRejeitaLinhaDeArrecadacao(t *testing.T) {
 	if _, err := extrairDeTexto("123456789012345678901234567890123456789012345678"); err == nil {
 		t.Fatal("esperava erro")
+	}
+}
+
+func TestExtrairDeRTF(t *testing.T) {
+	dir := t.TempDir()
+	caminho := filepath.Join(dir, "boleto.rtf")
+	rtf := `{\rtf1\ansi{\fonttbl{\f0 Arial;}}Linha: 00190.50095 40144.816069 06809.350314 3 37370000000100\par}`
+	if err := os.WriteFile(caminho, []byte(rtf), 0600); err != nil {
+		t.Fatal(err)
+	}
+	linhas, err := ExtrairDeRTF(caminho)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(linhas) != 1 {
+		t.Fatalf("esperava uma linha, obtidas %d", len(linhas))
 	}
 }
