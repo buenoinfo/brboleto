@@ -1,0 +1,56 @@
+version: '3'
+
+tasks:
+  default:
+    desc: Executa as verificações principais do projeto
+    deps:
+      - check
+
+  fmt:
+    desc: Formata os arquivos Go
+    cmds:
+      - gofmt -w .
+
+  test:
+    desc: Executa os testes
+    cmds:
+      - go test ./...
+
+  test-verbose:
+    desc: Executa os testes com saída detalhada
+    cmds:
+      - go test -v ./...
+
+  coverage:
+    desc: Gera o relatório de cobertura dos testes
+    cmds:
+      - go test ./... -coverprofile=coverage.out
+      - go tool cover -func=coverage.out
+
+  vet:
+    desc: Executa a análise estática padrão do Go
+    cmds:
+      - go vet ./...
+
+  build:
+    desc: Compila todos os pacotes
+    cmds:
+      - go build ./...
+
+  tidy:
+    desc: Organiza as dependências do módulo
+    cmds:
+      - go mod tidy
+
+  check:
+    desc: Executa formatação, testes, vet e build
+    cmds:
+      - task: fmt
+      - task: test
+      - task: vet
+      - task: build
+
+  clean:
+    desc: Remove arquivos gerados pelos testes
+    cmds:
+      - rm -f coverage.out

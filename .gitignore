@@ -1,0 +1,44 @@
+# Binários e artefatos de build
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+/bin/
+/dist/
+
+# Cobertura e profiling
+coverage.out
+coverage.html
+*.prof
+
+# Dependências vendorizadas são mantidas no repositório quando usadas.
+# /vendor/
+
+# Arquivos temporários
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+/tmp/
+
+# Configurações locais e segredos
+.env
+.env.*
+!.env.example
+*.local
+
+# IDEs e editores
+.idea/
+.vscode/
+*.iml
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Cache local do Go, caso seja configurado dentro do projeto
+.gocache/
